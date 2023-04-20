@@ -12,16 +12,17 @@ import (
 
 // CheckXSSWithHeadless is XSS Testing with headless browser
 func CheckXSSWithHeadless(url string, options model.Options) bool {
+	ctx := context.Background()
+	opts := []chromedp.ExecAllocatorOption{}
+	ctx, cancel := chromedp.NewExecAllocator(ctx, opts...)
+
 	// create chrome instance
 	check := false
-	ctx, cancel := chromedp.NewContext(
-		context.Background(),
-		//chromedp.WithLogf(log.Printf),
-	)
+	ctx, cancel = chromedp.NewContext(ctx)
 	defer cancel()
 
 	// create a timeout
-	ctx, cancel = context.WithTimeout(ctx, 8*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	chromedp.ListenTarget(ctx, func(ev interface{}) {
@@ -68,6 +69,7 @@ func CheckXSSWithHeadless(url string, options model.Options) bool {
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(url),
+		chromedp.Sleep(10*time.Second),
 		// wait for footer element is visible (ie, page is loaded)
 		// chromedp.WaitVisible(`body > footer`),
 	)
