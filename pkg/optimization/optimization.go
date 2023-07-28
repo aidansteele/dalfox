@@ -49,12 +49,12 @@ func GenerateNewRequest(url, body string, options model.Options) *http.Request {
 	}
 	if options.CookieFromRaw != "" {
 		rawFile := options.CookieFromRaw
-		rF, err := os.Open(rawFile)
+		rF, err := os.ReadFile(rawFile)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		} else {
-			rd := bufio.NewReader(rF)
+			rd := bufio.NewReader(bytes.NewReader(rF))
 			rq, err := http.ReadRequest(rd)
 			if err != nil {
 				fmt.Println(err)
